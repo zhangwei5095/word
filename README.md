@@ -1,6 +1,8 @@
 ###Java分布式中文分词组件 - word分词
 
-####word分词是一个Java实现的分布式的中文分词组件，提供了多种基于词典的分词算法，并利用ngram模型来消除歧义。能准确识别英文、数字，以及日期、时间等数量词，能识别人名、地名、组织机构名等未登录词。能通过自定义配置文件来改变组件行为，能自定义用户词库、自动检测词库变化、支持大规模分布式环境，能灵活指定多种分词算法，能使用refine功能灵活控制分词结果，还能使用词性标注、同义标注、反义标注、拼音标注等功能。同时还无缝和Lucene、Solr、ElasticSearch、Luke集成。注意：word1.3需要JDK1.8
+####word分词是一个Java实现的分布式的中文分词组件，提供了多种基于词典的分词算法，并利用ngram模型来消除歧义。能准确识别英文、数字，以及日期、时间等数量词，能识别人名、地名、组织机构名等未登录词。能通过自定义配置文件来改变组件行为，能自定义用户词库、自动检测词库变化、支持大规模分布式环境，能灵活指定多种分词算法，能使用refine功能灵活控制分词结果，还能使用词频统计、词性标注、同义标注、反义标注、拼音标注等功能。提供了10种分词算法，还提供了10种文本相似度算法，同时还无缝和Lucene、Solr、ElasticSearch、Luke集成。注意：word1.3需要JDK1.8
+
+###[捐赠致谢](https://github.com/ysc/QuestionAnsweringSystem/wiki/donation)
 
 ###API在线文档：
 
@@ -9,26 +11,25 @@
    [word 1.1 API](http://apdplat.org/word/apidocs/1.1/)
 
    [word 1.2 API](http://apdplat.org/word/apidocs/1.2/)
-      
-###编译好的jar包下载（包含依赖）：
 
-   [word 1.0](http://apdplat.org/word/archive/word-v1.0.zip)
-   
-   [word 1.1](http://apdplat.org/word/archive/word-v1.1.zip)
-   
-   [word 1.2](http://apdplat.org/word/archive/word-v1.2.zip)
+   [word 1.3 API](http://apdplat.org/word/apidocs/1.3/)
+      
+###[编译好的jar包下载](http://pan.baidu.com/s/1dDziDFz)
 
 ###Maven依赖：
 
-   在pom.xml中指定dependency，可用版本有1.0、1.1、1.2：
+   在pom.xml中指定dependency，可用版本有1.0、1.1、1.2、1.3、1.3.1：
 
 	<dependencies>
 		<dependency>
 			<groupId>org.apdplat</groupId>
 			<artifactId>word</artifactId>
-			<version>1.2</version>
+			<version>1.3</version>
 		</dependency>
 	</dependencies>
+	
+word 1.3.1这个版本是从代码分支[ForElasticsearch1.7.2](https://github.com/ysc/word/tree/ForElasticsearch1.7.2/)中编译出来的，主要目的是支持
+与lucene4.10.4、solr4.10.4和elasticsearch1.7.2兼容的版本。
 	
 ###分词使用方法：
 
@@ -137,7 +138,7 @@
 	2、配置并启动提供HTTP资源的web服务器，将项目：https://github.com/ysc/word_web部署到tomcat
 	3、配置并启动redis服务器
 	
-####11、词性标注（1.3才有这个功能）
+####11、词性标注
 
 	将分词结果作为输入参数，调用PartOfSpeechTagging类的process方法，词性保存在Word类的partOfSpeech字段中
 	如下所示：
@@ -300,23 +301,8 @@
 		OffsetAttribute offsetAttribute = tokenStream.getAttribute(OffsetAttribute.class);
 		//第几个词
 		PositionIncrementAttribute positionIncrementAttribute = tokenStream.getAttribute(PositionIncrementAttribute.class);
-		//词性
-		PartOfSpeechAttribute partOfSpeechAttribute = tokenStream.getAttribute(PartOfSpeechAttribute.class);
-		//首字母缩略拼音
-		AcronymPinyinAttribute acronymPinyinAttribute = tokenStream.getAttribute(AcronymPinyinAttribute.class);
-		//完整拼音
-		FullPinyinAttribute fullPinyinAttribute = tokenStream.getAttribute(FullPinyinAttribute.class);
-		//同义词
-		SynonymAttribute synonymAttribute = tokenStream.getAttribute(SynonymAttribute.class);
-		//反义词
-		AntonymAttribute antonymAttribute = tokenStream.getAttribute(AntonymAttribute.class);
-
+		
 		LOGGER.info(charTermAttribute.toString()+" ("+offsetAttribute.startOffset()+" - "+offsetAttribute.endOffset()+") "+positionIncrementAttribute.getPositionIncrement());
-		LOGGER.info("PartOfSpeech:"+partOfSpeechAttribute.toString());
-		LOGGER.info("AcronymPinyin:"+acronymPinyinAttribute.toString());
-		LOGGER.info("FullPinyin:"+fullPinyinAttribute.toString());
-		LOGGER.info("Synonym:"+synonymAttribute.toString());
-		LOGGER.info("Antonym:"+antonymAttribute.toString());
 	}
 	//消费完毕
 	tokenStream.close();
@@ -336,10 +322,10 @@
 	1、下载word-1.3.jar
 	下载地址：http://search.maven.org/remotecontent?filepath=org/apdplat/word/1.3/word-1.3.jar
 	
-	2、创建目录solr-5.1.0/example/solr/lib，将word-1.3.jar复制到lib目录
+	2、创建目录solr-5.2.0/example/solr/lib，将word-1.3.jar复制到lib目录
 	
 	3、配置schema指定分词器
-	将solr-5.1.0/example/solr/collection1/conf/schema.xml文件中所有的
+	将solr-5.2.0/example/solr/collection1/conf/schema.xml文件中所有的
 	<tokenizer class="solr.WhitespaceTokenizerFactory"/>和
 	<tokenizer class="solr.StandardTokenizerFactory"/>全部替换为
 	<tokenizer class="org.apdplat.word.solr.ChineseWordTokenizerFactory"/>
@@ -362,19 +348,31 @@
 	
 	5、如果需要指定特定的配置文件：
 	<tokenizer class="org.apdplat.word.solr.ChineseWordTokenizerFactory" segAlgorithm="ReverseMinimumMatching"
-			conf="solr-5.1.0/example/solr/nutch/conf/word.local.conf"/>
+			conf="solr-5.2.0/example/solr/nutch/conf/word.local.conf"/>
 	word.local.conf文件中可配置的内容见 word-1.3.jar 中的word.conf文件
 	如不指定，使用默认配置文件，位于 word-1.3.jar 中的word.conf文件
 	
 ####18、ElasticSearch插件：
 
 	1、打开命令行并切换到elasticsearch的bin目录
-	cd elasticsearch-1.5.1/bin
+	cd elasticsearch-2.1.1/bin
 	
 	2、运行plugin脚本安装word分词插件：
-	./plugin -u http://apdplat.org/word/archive/v1.2.zip -i word
+	./plugin install http://apdplat.org/word/archive/v1.4.zip
 	
-	3、修改文件elasticsearch-1.5.1/config/elasticsearch.yml，新增如下配置：	
+	安装的时候注意：
+		如果提示：
+			ERROR: failed to download 
+		或者 
+			Failed to install word, reason: failed to download
+		或者 
+			ERROR: incorrect hash (SHA1)
+		则重新再次运行命令，如果还是不行，多试两次
+		
+	如果是elasticsearch1.x系列版本，则使用如下命令：
+	./plugin -u http://apdplat.org/word/archive/v1.3.1.zip -i word
+		
+	3、修改文件elasticsearch-2.1.1/config/elasticsearch.yml，新增如下配置：	
 	index.analysis.analyzer.default.type : "word"
 	index.analysis.tokenizer.default.type : "word"
 	
@@ -382,10 +380,10 @@
 	http://localhost:9200/_analyze?analyzer=word&text=杨尚川是APDPlat应用级产品开发平台的作者
 		
 	5、自定义配置
-	修改配置文件elasticsearch-1.5.1/plugins/word/word.local.conf
+	修改配置文件elasticsearch-2.1.1/plugins/word/word.local.conf
 		
 	6、指定分词算法
-	修改文件elasticsearch-1.5.1/config/elasticsearch.yml，新增如下配置：
+	修改文件elasticsearch-2.1.1/config/elasticsearch.yml，新增如下配置：
 	index.analysis.analyzer.default.segAlgorithm : "ReverseMinimumMatching"
 	index.analysis.tokenizer.default.segAlgorithm : "ReverseMinimumMatching"
 
@@ -1103,7 +1101,41 @@ word分词提供了多种文本相似度计算方式：
 	我爱读书 和 我爱读书 的相似度分值：1.0
 	我爱读书 和 他是黑客 的相似度分值：0.0
 	他是黑客 和 他是黑客 的相似度分值：1.0
-	
+
+####23、判定句子是有意义的人话的可能性：
+
+	通过如下命令:
+	unix-like:
+		chmod +x sentence-identify.sh & ./sentence-identify.sh
+	windows:
+		./sentence-identify.bat
+	运行 org.apdplat.word.analysis.SentenceIdentify 类的结果如下所示:
+
+	1. 句子: 我是一个男人你是一个女人, 概率: 0.71428573
+    2. 句子: 我是一个人, 概率: 0.6666667
+    3. 句子: 我爱读书, 概率: 0.5
+    4. 句子: 我爱学习, 概率: 0.5
+    5. 句子: 法蒂小室汝辈武学大师改个入门处, 概率: 0.2857143
+    6. 句子: 显气孔率高压线塔总监督室波洛奈兹王毅陈刘玉荣, 概率: 0.2857143
+    7. 句子: 王捷俊汇报演出干草加韦拉一杠地垄墙未尝不可, 概率: 0.25
+    8. 句子: 八九点钟山光水色饱经世变普留申科淮河镇乐不极盘模拟飞行, 概率: 0.22222222
+    9. 句子: 物位任务区亡灵书巴纳尔没脑子揪人心肺复习功课林友力避风塘, 概率: 0.2
+    10. 句子: 参与方植物学报白善烨暗影狂奔骑白马痦子山城堡犹豫不定岳阳机场, 概率: 0.2
+
+	接着可根据命令行提示输入句子并回车来获得句子的评分
+
+	例如输入句子并回车:为中国崛起而努力奋斗
+	程序返回结果如下:
+	随机单词: [为, 中国, 崛起, 而, 努力, 奋斗]
+	生成句子: 为中国崛起而努力奋斗
+	句子概率: 1.0
+
+	例如输入句子并回车:人脑的记忆是保存在生物电上还是在细胞里？
+	程序返回结果如下:
+	随机单词: [人脑, 的, 记忆, 是, 保存, 在, 生物, 电, 上, 还是, 在, 细胞, 里]
+    生成句子: 人脑的记忆是保存在生物电上还是在细胞里？
+    句子概率: 0.8333333
+
 ###分词算法效果评估：
 
 	1、word分词 最大Ngram分值算法：
